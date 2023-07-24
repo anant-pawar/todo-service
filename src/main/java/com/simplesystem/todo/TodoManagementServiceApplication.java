@@ -1,4 +1,4 @@
-package com.simplesystem.todomanagementservice;
+package com.simplesystem.todo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
