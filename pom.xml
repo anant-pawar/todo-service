@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.simplesystem</groupId>
-	<artifactId>todo-management-service</artifactId>
+	<artifactId>todo-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>todo-management-service</name>
-	<description>Simple ToDo Management Service</description>
+	<name>todo-service</name>
+	<description>Simple ToDo Service</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>

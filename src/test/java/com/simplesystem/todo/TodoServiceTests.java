@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class TodoManagementServiceTests {
+public class TodoServiceTests {
     @Test
     public void testCreateTodoItem() {
         fail();
