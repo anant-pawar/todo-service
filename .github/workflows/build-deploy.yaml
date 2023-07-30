@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: build-deploy
 
 on:
   push:
@@ -32,3 +32,28 @@ jobs:
         with:
           service-id: ${{ secrets.RENDER_SERVICE }}
           api-key: ${{ secrets.RENDER_TOKEN }}
+  build-docs:
+    name: Build Documentation
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        id: git-checkhot
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Build
+        id: redoc-build
+        shell: bash
+        continue-on-error: true
+        run: |
+          echo "Building Started" &&  npx redoc-cli build docs/openapi.yaml --title "Rat API" &&  mv redoc-static.html index.html && echo "Building Finished"
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          force_orphan: true
+          exclude_assets: '.github,.mvn,.gitignore,docs,src,README.md,Dockerfile,mvnw,mvnw.cmd,pom.xml'
