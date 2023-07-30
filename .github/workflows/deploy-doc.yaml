@@ -29,4 +29,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: .
           force_orphan: true
-          exclude_assets: '.github,LICENSE,README.md'
+          exclude_assets: '.github,.mvn,.gitignore,docs,src,README.md,Dockerfile,mvnw,mvnw.cmd,pom.xml'
