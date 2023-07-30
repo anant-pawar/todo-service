@@ -1,4 +1,4 @@
-name: CI
+name: Build and Deploy
 
 on: [push]
 
@@ -20,10 +20,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      - name: Publish to Docker Hub
-        uses: docker/build-push-action@v1
+  deploy:
+    name: Deploy Service
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Render
+        uses: johnbeynon/render-deploy-action@v0.0.8
         with:
-          username: ${{ secrets.DOCKER_USER }}
-          password: ${{ secrets.DOCKER_TOKEN }}
-          repository: anantpawar/todo-service
-          tags: ${{github.run_number}}
+          service-id: ${{ secrets.RENDER_SERVICE }}
+          api-key: ${{ secrets.RENDER_TOKEN }}
