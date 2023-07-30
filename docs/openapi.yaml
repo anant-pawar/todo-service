@@ -99,7 +99,7 @@ paths:
       tags:
         - Todo
       summary: Transition a todo item by id
-      operationId: updateTodo
+      operationId: transitionTodo
       parameters:
         - name: id
           in: path
