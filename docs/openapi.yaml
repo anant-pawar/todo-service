@@ -1,0 +1,161 @@
+openapi: 3.0.3
+info:
+  title: Todo Service
+  description: |-
+   A simple Todo service api
+    
+    Some useful links:
+    - [The Todo Service repository](https://github.com/anant-pawar/todo-service)
+
+  contact:
+    email: anant.c.pawar@gmail.com
+  version: 0.0.1-SNAPSHOT
+servers:
+  - url: https://petstore3.swagger.io/api/v3
+tags:
+  - name: Todo
+    description: Todo service endpoints
+
+paths:
+  /todo:
+    post:
+      tags:
+        - Todo
+      summary: create a new todo item
+      operationId: createTodo
+      requestBody:
+        description: Create a new todo item
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoCreate'
+        required: true
+      responses:
+        '200':
+          description: Successful
+        '400':
+          description: Invalid input
+    get:
+      tags:
+        - Todo      
+      summary: get all todo items
+      operationId: getTodos
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Todo'       
+  /todo/{id}:
+    get:
+      tags:
+        - Todo      
+      summary: get a todo item by id
+      operationId: getTodoById
+      parameters:
+        - name: Id
+          in: path
+          description: ID of todo to return
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Todo'   
+    patch:
+      tags:
+        - Todo
+      summary: update a todo item by id
+      operationId: updateTodo
+      parameters:
+        - name: Id
+          in: path
+          description: ID of todo to return
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update a todo item by id
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StatusTransitionRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful
+        '400':
+          description: Invalid input
+components:
+  schemas:
+    TodoCreate:
+      type: object
+      properties:
+        description:
+          type: string
+          example: "But 1Kg Tomatoes"
+        dueOn:
+          type: string
+          description: due date
+          example: 2023-07-31 15:00:00
+    TodoUpdate:
+      type: object
+      properties:
+        description:
+          type: string
+          example: "But 1Kg Tomatoes"
+    Todo:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "4a39c391-1c9e-44bf-90ff-f053c42aac50"
+        description:
+          type: string
+          example: "But 1Kg Tomatoes"
+        status:
+          type: string
+          description: status of todo item
+          enum:
+            - DONE
+            - NOT_DONE
+            - PAST_DUE
+        dueOn:
+          type: string
+          description: due date
+          example: 2023-07-30 15:00:00      
+        doneOn:
+          type: string
+          description: due date
+          example: 2023-07-31 15:00:00    
+        createdAt:
+          type: string
+          description: due date
+          example: 2023-07-29 15:00:00      
+    StatusTransitionRequest:
+      type: object
+      properties:
+        event:
+          type: string
+          description: transition status of todo item
+          enum:
+            - TO_DONE
+            - TO_NOT_DONE
+            - TO_PAST_DUE
+    StatusTransitionResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          description: transition status of todo item
+          enum:
+            - DONE
+            - NOT_DONE
+            - PAST_DUE
