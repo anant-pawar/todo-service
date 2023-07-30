@@ -1,11 +1,11 @@
-name: My API - Documentation
+name: Todo Service - Documentation
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
-  build:
-    name: Build My API documentation
+  deploy-docs:
+    name: Todo Service Docs
     runs-on: ubuntu-latest
     permissions:
       contents: write
