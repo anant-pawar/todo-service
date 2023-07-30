@@ -1,8 +1,10 @@
-name: Todo Service - Documentation
+name: Deploy Documentation
 on:
   push:
     branches: [ master ]
-
+    paths:
+        - '.github/workflows/deploy-doc.yml'
+        - 'docs/openapi.yaml'
 jobs:
   deploy-docs:
     name: Todo Service Docs
