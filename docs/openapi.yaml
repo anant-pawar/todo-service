@@ -18,7 +18,7 @@ tags:
     description: Todo service endpoints
 
 paths:
-  /todo:
+  /todos:
     post:
       tags:
         - Todo
@@ -50,7 +50,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Todo'       
-  /todo/{id}:
+  /todos/{id}:
     get:
       tags:
         - Todo      
@@ -94,7 +94,7 @@ paths:
           description: Successful
         '400':
           description: Invalid input
-  /todo/{id}/status/transaction:
+  /todos/{id}/status/transaction:
     put:
       tags:
         - Todo
