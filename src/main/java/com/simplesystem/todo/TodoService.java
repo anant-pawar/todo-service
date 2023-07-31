@@ -63,7 +63,7 @@ public class TodoService {
     }
 
     private StateMachine<Status, StatusTransitionEvent> buildStateMachine(final TodoEntity todoEntity) {
-        final var stateMachine = this.stateMachineFactory.getStateMachine(todoEntity.getId().toString());
+        final var stateMachine = this.stateMachineFactory.getStateMachine(todoEntity.getId());
         stateMachine.stop();
         stateMachine.getStateMachineAccessor()
                 .doWithAllRegions(sma -> {

@@ -1,8 +1,6 @@
 package com.simplesystem.todo;
 
-import com.simplesystem.todo.model.Status;
-import com.simplesystem.todo.model.TodoCreate;
-import com.simplesystem.todo.model.TodoUpdate;
+import com.simplesystem.todo.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -12,11 +10,16 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.statemachine.StateMachine;
+import org.springframework.statemachine.access.StateMachineAccessor;
+import org.springframework.statemachine.config.StateMachineFactory;
+import org.springframework.statemachine.state.State;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,12 +28,14 @@ public class TodoServiceTests {
     private TodoRepository repository;
     private TodoMapper mapper;
     private TodoService service;
+    private StateMachineFactory stateMachineFactory;
 
     @BeforeEach
     public void init() {
         repository = Mockito.mock(TodoRepository.class);
         mapper = Mockito.spy(Mappers.getMapper(TodoMapper.class));
-        service = new TodoService(repository, mapper, null);
+        stateMachineFactory = Mockito.mock(StateMachineFactory.class);
+        service = new TodoService(repository, mapper, stateMachineFactory);
     }
 
     @Test
@@ -79,15 +84,37 @@ public class TodoServiceTests {
     }
 
     @Test
-    @Disabled
     public void testUpdateTodoItemToDone() {
-        fail();
+        final var id = UUID.randomUUID().toString();
+        final var dueOn = LocalDateTime.now().plusDays(1);
+        final var createdAt = LocalDateTime.now();
+
+        final var existingTodoEntity = createTodoEntity(id, "Buy 1Kg Tomatoes", Status.DONE, dueOn, null, createdAt);
+        Mockito.when(repository.findById(id)).thenReturn(Optional.of(existingTodoEntity));
+        final var stateMachine = Mockito.mock(StateMachine.class, Mockito.RETURNS_DEEP_STUBS);
+        Mockito.when(stateMachineFactory.getStateMachine(id)).thenReturn(stateMachine);
+        Mockito.when(stateMachine.getState().getId()).thenReturn(Status.NOT_DONE);
+
+        Status status = service.transitionTodo(id, createStatusTransitionRequest(StatusTransitionEvent.TO_NOT_DONE));
+
+        assertEquals(Status.NOT_DONE, status);
     }
 
     @Test
-    @Disabled
     public void testUpdateTodoItemToNotDone() {
-        fail();
+        final var id = UUID.randomUUID().toString();
+        final var dueOn = LocalDateTime.now().plusDays(1);
+        final var createdAt = LocalDateTime.now();
+
+        final var existingTodoEntity = createTodoEntity(id, "Buy 1Kg Tomatoes", Status.NOT_DONE, dueOn, null, createdAt);
+        Mockito.when(repository.findById(id)).thenReturn(Optional.of(existingTodoEntity));
+        final var stateMachine = Mockito.mock(StateMachine.class, Mockito.RETURNS_DEEP_STUBS);
+        Mockito.when(stateMachineFactory.getStateMachine(id)).thenReturn(stateMachine);
+        Mockito.when(stateMachine.getState().getId()).thenReturn(Status.DONE);
+
+        Status status = service.transitionTodo(id, createStatusTransitionRequest(StatusTransitionEvent.TO_DONE));
+
+        assertEquals(Status.DONE, status);
     }
 
     @Test
@@ -127,6 +154,12 @@ public class TodoServiceTests {
         final var todoUpdate = new TodoUpdate();
         todoUpdate.setDescription(description);
         return todoUpdate;
+    }
+
+    private StatusTransitionRequest createStatusTransitionRequest(final StatusTransitionEvent statusTransitionEvent) {
+        final var statusTransitionRequest = new StatusTransitionRequest();
+        statusTransitionRequest.setEvent(statusTransitionEvent);
+        return statusTransitionRequest;
     }
 
     private TodoCreate createTodoCreate(final String description, final LocalDateTime dueOn) {
