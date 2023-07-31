@@ -2,7 +2,11 @@
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=todo-service&metric=coverage)](https://sonarcloud.io/summary/new_code?id=todo-service)
 
 # Todo Service
- A simple service for creating and managing todo items.
+
+ * Provides REST endpoints for creating and managing todo items.
+ * Automatically marks items that are past their due date as "past due"
+
+ ![Todo List](https://media.giphy.com/media/3oKHWtXlzTHeuVewtq/giphy.gif)
 
 # Technology Stack
 Few key language and frameworks
