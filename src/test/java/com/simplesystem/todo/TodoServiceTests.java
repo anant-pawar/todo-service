@@ -1,8 +1,8 @@
 package com.simplesystem.todo;
 
-import com.simplesystem.todo.model.*;
+import com.simplesystem.todo.model.Status;
+import com.simplesystem.todo.model.StatusTransitionEvent;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
@@ -11,15 +11,12 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.statemachine.StateMachine;
-import org.springframework.statemachine.access.StateMachineAccessor;
 import org.springframework.statemachine.config.StateMachineFactory;
-import org.springframework.statemachine.state.State;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -45,8 +42,8 @@ public class TodoServiceTests {
         final var dueOn = LocalDateTime.now().plusDays(1);
         final var createdAt = LocalDateTime.now();
 
-        final var todoEntity = createTodoEntity(id, description, Status.NOT_DONE, dueOn, null, createdAt);
-        final var todoCreate = createTodoCreate(description, dueOn);
+        final var todoEntity = TestHelper.createTodoEntity(id, description, Status.NOT_DONE, dueOn, null, createdAt);
+        final var todoCreate = TestHelper.createTodoCreate(description, dueOn);
 
         Mockito.when(mapper.createId()).thenReturn(id);
         Mockito.when(repository.save(ArgumentMatchers.any(TodoEntity.class))).thenReturn(todoEntity);
@@ -67,13 +64,13 @@ public class TodoServiceTests {
         final var dueOn = LocalDateTime.now().plusDays(1);
         final var createdAt = LocalDateTime.now();
 
-        final var existingTodoEntity = createTodoEntity(id, "Buy 1Kg Tomatoes", Status.DONE, dueOn, null, createdAt);
-        final var updatedTodoEntity = createTodoEntity(id, "Buy 2Kg Tomatoes", Status.DONE, dueOn, null, createdAt);
+        final var existingTodoEntity = TestHelper.createTodoEntity(id, "Buy 1Kg Tomatoes", Status.DONE, dueOn, null, createdAt);
+        final var updatedTodoEntity = TestHelper.createTodoEntity(id, "Buy 2Kg Tomatoes", Status.DONE, dueOn, null, createdAt);
 
         Mockito.when(repository.findById(id)).thenReturn(Optional.of(existingTodoEntity));
         Mockito.when(repository.save(ArgumentMatchers.any(TodoEntity.class))).thenReturn(updatedTodoEntity);
 
-        final var todo = service.updateTodo(id, createTodoUpdate("Buy 2Kg Tomatoes"));
+        final var todo = service.updateTodo(id, TestHelper.createTodoUpdate("Buy 2Kg Tomatoes"));
 
         assertNotNull(todo);
         assertEquals(id, todo.getId());
@@ -89,13 +86,13 @@ public class TodoServiceTests {
         final var dueOn = LocalDateTime.now().plusDays(1);
         final var createdAt = LocalDateTime.now();
 
-        final var existingTodoEntity = createTodoEntity(id, "Buy 1Kg Tomatoes", Status.DONE, dueOn, null, createdAt);
+        final var existingTodoEntity = TestHelper.createTodoEntity(id, "Buy 1Kg Tomatoes", Status.DONE, dueOn, null, createdAt);
         Mockito.when(repository.findById(id)).thenReturn(Optional.of(existingTodoEntity));
         final var stateMachine = Mockito.mock(StateMachine.class, Mockito.RETURNS_DEEP_STUBS);
         Mockito.when(stateMachineFactory.getStateMachine(id)).thenReturn(stateMachine);
         Mockito.when(stateMachine.getState().getId()).thenReturn(Status.NOT_DONE);
 
-        Status status = service.transitionTodo(id, createStatusTransitionRequest(StatusTransitionEvent.TO_NOT_DONE));
+        Status status = service.transitionTodo(id, TestHelper.createStatusTransitionRequest(StatusTransitionEvent.TO_NOT_DONE));
 
         assertEquals(Status.NOT_DONE, status);
     }
@@ -106,21 +103,21 @@ public class TodoServiceTests {
         final var dueOn = LocalDateTime.now().plusDays(1);
         final var createdAt = LocalDateTime.now();
 
-        final var existingTodoEntity = createTodoEntity(id, "Buy 1Kg Tomatoes", Status.NOT_DONE, dueOn, null, createdAt);
+        final var existingTodoEntity = TestHelper.createTodoEntity(id, "Buy 1Kg Tomatoes", Status.NOT_DONE, dueOn, null, createdAt);
         Mockito.when(repository.findById(id)).thenReturn(Optional.of(existingTodoEntity));
         final var stateMachine = Mockito.mock(StateMachine.class, Mockito.RETURNS_DEEP_STUBS);
         Mockito.when(stateMachineFactory.getStateMachine(id)).thenReturn(stateMachine);
         Mockito.when(stateMachine.getState().getId()).thenReturn(Status.DONE);
 
-        Status status = service.transitionTodo(id, createStatusTransitionRequest(StatusTransitionEvent.TO_DONE));
+        Status status = service.transitionTodo(id, TestHelper.createStatusTransitionRequest(StatusTransitionEvent.TO_DONE));
 
         assertEquals(Status.DONE, status);
     }
 
     @Test
     public void testGetAllNotDoneTodoItems() {
-        final var firstTodoEntity = createTodoEntity(UUID.randomUUID().toString(), "Buy 1Kg Tomatoes", Status.NOT_DONE, LocalDateTime.now().plusDays(1), null, LocalDateTime.now());
-        final var secondTodoEntity = createTodoEntity(UUID.randomUUID().toString(), "Buy 1Kg Tomatoes", Status.NOT_DONE, LocalDateTime.now().plusDays(2), null, LocalDateTime.now());
+        final var firstTodoEntity = TestHelper.createTodoEntity(UUID.randomUUID().toString(), "Buy 1Kg Tomatoes", Status.NOT_DONE, LocalDateTime.now().plusDays(1), null, LocalDateTime.now());
+        final var secondTodoEntity = TestHelper.createTodoEntity(UUID.randomUUID().toString(), "Buy 1Kg Tomatoes", Status.NOT_DONE, LocalDateTime.now().plusDays(2), null, LocalDateTime.now());
 
         Mockito.when(repository.findAll(ArgumentMatchers.any(Specification.class))).thenReturn(List.of(firstTodoEntity, secondTodoEntity));
 
@@ -136,7 +133,7 @@ public class TodoServiceTests {
         final var dueOn = LocalDateTime.now().plusDays(1);
         final var createdAt = LocalDateTime.now();
 
-        final var todoEntity = createTodoEntity(id, description, Status.DONE, dueOn, null, createdAt);
+        final var todoEntity = TestHelper.createTodoEntity(id, description, Status.DONE, dueOn, null, createdAt);
 
         Mockito.when(repository.findById(id)).thenReturn(Optional.of(todoEntity));
 
@@ -150,35 +147,5 @@ public class TodoServiceTests {
         assertEquals(createdAt, todo.getCreatedAt());
     }
 
-    private TodoUpdate createTodoUpdate(final String description) {
-        final var todoUpdate = new TodoUpdate();
-        todoUpdate.setDescription(description);
-        return todoUpdate;
-    }
 
-    private StatusTransitionRequest createStatusTransitionRequest(final StatusTransitionEvent statusTransitionEvent) {
-        final var statusTransitionRequest = new StatusTransitionRequest();
-        statusTransitionRequest.setEvent(statusTransitionEvent);
-        return statusTransitionRequest;
-    }
-
-    private TodoCreate createTodoCreate(final String description, final LocalDateTime dueOn) {
-        final var todoCreate = new TodoCreate();
-        todoCreate.setDescription(description);
-        todoCreate.setDueOn(dueOn);
-        return todoCreate;
-    }
-
-    private TodoEntity createTodoEntity(final String id, final String description,
-                                        final Status status, final LocalDateTime dueOn,
-                                        final LocalDateTime doneOn, final LocalDateTime createdAt) {
-        final var todoEntity = new TodoEntity();
-        todoEntity.setId(id);
-        todoEntity.setDescription(description);
-        todoEntity.setStatus(status);
-        todoEntity.setDueOn(dueOn);
-        todoEntity.setDoneOn(doneOn);
-        todoEntity.setCreatedAt(createdAt);
-        return todoEntity;
-    }
 }
