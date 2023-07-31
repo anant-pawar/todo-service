@@ -1,12 +1,15 @@
 ![Build Deploy Workflow](https://github.com/anant-pawar/todo-service/actions/workflows/build-deploy.yaml/badge.svg)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=todo-service&metric=coverage)](https://sonarcloud.io/summary/new_code?id=todo-service)
+![Code Coverage](https://sonarcloud.io/api/project_badges/measure?project=todo-service&metric=coverage)
 
 # Todo Service
+Simple service for managing todo items
 
- * Provides REST endpoints for creating and managing todo items.
- * Automatically marks items that are past their due date as "past due"
+![Todo List](https://media.giphy.com/media/3oKHWtXlzTHeuVewtq/giphy.gif)
 
- ![Todo List](https://media.giphy.com/media/3oKHWtXlzTHeuVewtq/giphy.gif)
+# Simple Design
+  ![service.png](service.png)
+* Provides REST endpoints for creating and managing todo items.
+* Automatically marks items that are past their due date as "past due"
 
 # Technology Stack
 Few key language and frameworks
